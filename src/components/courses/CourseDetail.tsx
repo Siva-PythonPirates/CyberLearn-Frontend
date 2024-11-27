@@ -1,11 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { BookOpen, Clock, Users, Star, Play, CheckCircle, Lock } from 'lucide-react';
-import { courses } from '../data/courses';
+import { BookOpen, Clock, Users, Star } from 'lucide-react';
+import axiosInstance from '../auth/axiosInstance';
+import CourseLessons from './CourseLessons';
+
+interface Course {
+  CourseName: string;
+  Duration: string;
+  Enrolled: number;
+  Rating: number;
+  Description: string;
+  ImageUrl: string;
+  Author: string;
+  lessons: any[];
+}
 
 const CourseDetail = () => {
   const { courseId } = useParams();
-  const course = courses.find((c) => c.id === Number(courseId));
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>(''); 
+
+  
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const response = await axiosInstance.get(`/courses/${courseId}/`);
+        setCourse(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch course details. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchCourse();
+  }, [courseId]);
+
+  if (loading) {
+    return <div className="text-center text-white">Loading course details...</div>; 
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
 
   if (!course) {
     return (
@@ -18,34 +56,35 @@ const CourseDetail = () => {
     );
   }
 
-  const completedModules = course.modulesList.filter((module) => module.completed).length;
-  const progress = (completedModules / course.modulesList.length) * 100;
+ 
+  const completedModules = course.lessons.filter((lesson: any) => lesson.Status === 'completed').length;
+  const progress = (completedModules / course.lessons.length) * 100;
 
   return (
     <div className="min-h-screen pt-16 pb-12">
       {/* Hero Section */}
       <div className="relative h-80">
         <img
-          src={course.image}
-          alt={course.title}
+          src={course.ImageUrl}
+          alt={course.CourseName}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50" />
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl font-bold text-white mb-4">{course.title}</h1>
+            <h1 className="text-4xl font-bold text-white mb-4">{course.CourseName}</h1>
             <div className="flex items-center space-x-6 text-gray-300">
               <div className="flex items-center">
                 <Clock className="h-5 w-5 mr-2" />
-                {course.duration}
+                {course.Duration}
               </div>
               <div className="flex items-center">
                 <Users className="h-5 w-5 mr-2" />
-                {course.enrolled.toLocaleString()} enrolled
+                {(course.Enrolled || 0).toLocaleString()} enrolled
               </div>
               <div className="flex items-center">
                 <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                {course.rating} rating
+                {course.Rating} rating
               </div>
             </div>
           </div>
@@ -59,40 +98,13 @@ const CourseDetail = () => {
           <div className="lg:col-span-2">
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 mb-8">
               <h2 className="text-2xl font-bold text-white mb-4">About this course</h2>
-              <p className="text-gray-300">{course.description}</p>
+              <p className="text-gray-300">{course.Description}</p>
             </div>
 
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6">
               <h2 className="text-2xl font-bold text-white mb-6">Course Content</h2>
-              <div className="space-y-4">
-                {course.modulesList.map((module) => (
-                  <div
-                    key={module.id}
-                    className={`flex items-center justify-between p-4 rounded-xl ${
-                      module.locked ? 'bg-gray-900/50' : 'bg-gray-700/50'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      {module.completed ? (
-                        <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                      ) : module.locked ? (
-                        <Lock className="h-5 w-5 text-gray-500 mr-3" />
-                      ) : (
-                        <Play className="h-5 w-5 text-cyan-500 mr-3" />
-                      )}
-                      <div>
-                        <h3 className="text-white font-medium">{module.title}</h3>
-                        <p className="text-sm text-gray-400">{module.duration}</p>
-                      </div>
-                    </div>
-                    {!module.locked && !module.completed && (
-                      <button className="px-4 py-2 text-sm font-medium text-white bg-cyan-600 rounded-lg hover:bg-cyan-700">
-                        Start
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
+              {/* Use the CourseLessons component here */}
+              <CourseLessons courseId={parseInt(courseId as string)} />
             </div>
           </div>
 
@@ -102,11 +114,11 @@ const CourseDetail = () => {
               <div className="flex items-center space-x-4 mb-6">
                 <img
                   src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100"
-                  alt={course.instructor}
+                  alt={course.Author}
                   className="w-16 h-16 rounded-full"
                 />
                 <div>
-                  <h3 className="text-white font-medium">{course.instructor}</h3>
+                  <h3 className="text-white font-medium">{course.Author}</h3>
                   <p className="text-gray-400">Senior Security Engineer</p>
                 </div>
               </div>
@@ -121,12 +133,12 @@ const CourseDetail = () => {
                 <div className="flex mb-2 items-center justify-between">
                   <div>
                     <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-500 bg-cyan-500/20">
-                      {progress}%
+                      {progress.toFixed(0)}%
                     </span>
                   </div>
                   <div className="text-right">
                     <span className="text-xs font-semibold inline-block text-gray-400">
-                      {completedModules}/{course.modulesList.length} modules completed
+                      {completedModules}/{course.lessons.length} lessons completed
                     </span>
                   </div>
                 </div>

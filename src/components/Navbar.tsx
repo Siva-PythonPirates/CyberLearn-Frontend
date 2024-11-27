@@ -21,6 +21,7 @@ const Navbar = () => {
               <Link to="/" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</Link>
               <Link to="/courses" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Courses</Link>
               <Link to="/challenges" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Challenges</Link>
+              <Link to="/leaderboard" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Leaderboard</Link>
               <Link to="/login" className="text-white bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-md text-sm font-medium">Login</Link>
               <Link to="/register" className="text-cyan-500 border border-cyan-500 hover:bg-cyan-500 hover:text-white px-4 py-2 rounded-md text-sm font-medium">Register</Link>
             </div>
@@ -43,6 +44,7 @@ const Navbar = () => {
             <Link to="/" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Home</Link>
             <Link to="/courses" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Courses</Link>
             <Link to="/challenges" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Challenges</Link>
+            <Link to="/leaderboard" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Leaderboard</Link>
             <Link to="/login" className="text-white bg-cyan-600 hover:bg-cyan-700 block px-3 py-2 rounded-md text-base font-medium">Login</Link>
             <Link to="/register" className="text-cyan-500 border border-cyan-500 hover:bg-cyan-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Register</Link>
           </div>
