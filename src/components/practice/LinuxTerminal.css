@@ -1,0 +1,82 @@
+/* Commands practice section (outside terminal, on top) */
+.commands-practice {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #222;
+    padding: 10px 0;
+    color: #fff;
+    font-family: "Courier New", monospace;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .command-hint {
+    margin: 0 10px;
+  }
+  
+  .commands-practice span code {
+    background-color: #000;
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: #00ff00;
+  }
+  
+  /* General styling for terminal container */
+  .terminal-container {
+    width: 800px;
+    height: 600px;
+    background-color: #1e1e1e;
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Styling the terminal output area */
+  .terminal-output {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
+  }
+  
+  .command-line {
+    display: flex;
+  }
+  
+  .command-output {
+    margin-left: 15px;
+    white-space: pre-wrap;
+  }
+  
+  /* Terminal prompt */
+  .prompt {
+    color: #00ff00;
+    margin-right: 5px;
+  }
+  
+  .terminal-prompt {
+    color: #00ff00;
+  }
+  
+  /* Terminal input styling */
+  .terminal-form {
+    display: flex;
+    margin-top: 10px;
+  }
+  
+  .terminal-input {
+    background-color: #1e1e1e;
+    color: #00ff00;
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    font-family: "Courier New", monospace;
+    font-size: 16px;
+    caret-color: #00ff00;
+  }
+  

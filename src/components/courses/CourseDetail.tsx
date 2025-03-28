@@ -20,8 +20,16 @@ const CourseDetail = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>(''); 
+  const [completedModules, setCompletedModules] = useState<number>(0);
 
-  
+  // Load progress from localStorage on mount
+  useEffect(() => {
+    const storedProgress = localStorage.getItem(`course-${courseId}-progress`);
+    if (storedProgress) {
+      setCompletedModules(parseInt(storedProgress));
+    }
+  }, [courseId]);
+
   useEffect(() => {
     const fetchCourse = async () => {
       try {
@@ -37,8 +45,19 @@ const CourseDetail = () => {
     fetchCourse();
   }, [courseId]);
 
+  const updateProgress = (completedLessons: number, totalLessons: number) => {
+    setCompletedModules(completedLessons);
+    
+    // Save progress in localStorage
+    localStorage.setItem(`course-${courseId}-progress`, completedLessons.toString());
+
+    // Optionally sync progress to backend
+    axiosInstance.patch(`/courses/${courseId}/progress/`, { completedLessons })
+      .catch(err => console.error("Failed to sync progress:", err));
+  };
+
   if (loading) {
-    return <div className="text-center text-white">Loading course details...</div>; 
+    return <div className="text-center text-white">Loading course details...</div>;
   }
 
   if (error) {
@@ -55,10 +74,6 @@ const CourseDetail = () => {
       </div>
     );
   }
-
- 
-  const completedModules = course.lessons.filter((lesson: any) => lesson.Status === 'completed').length;
-  const progress = (completedModules / course.lessons.length) * 100;
 
   return (
     <div className="min-h-screen pt-16 pb-12">
@@ -94,7 +109,6 @@ const CourseDetail = () => {
       {/* Course Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2">
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 mb-8">
               <h2 className="text-2xl font-bold text-white mb-4">About this course</h2>
@@ -103,8 +117,8 @@ const CourseDetail = () => {
 
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6">
               <h2 className="text-2xl font-bold text-white mb-6">Course Content</h2>
-              {/* Use the CourseLessons component here */}
-              <CourseLessons courseId={parseInt(courseId as string)} />
+              {/* Pass the updateProgress function to CourseLessons */}
+              <CourseLessons courseId={parseInt(courseId as string)} updateProgress={updateProgress} />
             </div>
           </div>
 
@@ -122,9 +136,6 @@ const CourseDetail = () => {
                   <p className="text-gray-400">Senior Security Engineer</p>
                 </div>
               </div>
-              <button className="w-full px-4 py-2 text-sm font-medium text-white bg-cyan-600 rounded-lg hover:bg-cyan-700">
-                Continue Learning
-              </button>
             </div>
 
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6">
@@ -133,7 +144,7 @@ const CourseDetail = () => {
                 <div className="flex mb-2 items-center justify-between">
                   <div>
                     <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-500 bg-cyan-500/20">
-                      {progress.toFixed(0)}%
+                      {((completedModules / course.lessons.length) * 100).toFixed(0)}%
                     </span>
                   </div>
                   <div className="text-right">
@@ -144,7 +155,7 @@ const CourseDetail = () => {
                 </div>
                 <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-700">
                   <div
-                    style={{ width: `${progress}%` }}
+                    style={{ width: `${(completedModules / course.lessons.length) * 100}%` }}
                     className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-cyan-500"
                   />
                 </div>
